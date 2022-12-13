@@ -69,7 +69,7 @@ export const saveCookiesToLocal = async (email: string, page: Page) : Promise<Sa
   await fs.writeFile(cookiesFilePath, JSON.stringify(cookiesObject), (err) => {
     if (err) {
       return {
-        errorMessage: `The file could not be written. ${err.message}`
+        errorMessage: `The cookie file could not be written. ${err.message}`
       }
     }
   })
@@ -77,16 +77,21 @@ export const saveCookiesToLocal = async (email: string, page: Page) : Promise<Sa
   return;
 }
 export const setCookiesFromExisting = async (email: string, page: Page) => {
-  if (hasExistingCookies(email)) {
-    const cookiesAsJsonString = fs.readFileSync(getCookiePath(email), {encoding: 'utf-8'})
-    const cookiesAsObject = JSON.parse(cookiesAsJsonString)
+  if (hasExistingCookies(email)) {    
+    try { 
+      const cookiesAsJsonString = fs.readFileSync(getCookiePath(email), {encoding: 'utf-8'})
+      const cookiesAsObject = JSON.parse(cookiesAsJsonString)
 
-    if (cookiesAsObject) {
-      for (const cookie of cookiesAsObject) {
-        await page.setCookie(cookie)
+      if (cookiesAsObject) {
+        for (const cookie of cookiesAsObject) {
+          await page.setCookie(cookie)
+        }
+        
+        return true;
       }
-      
-      return true;
+    } catch {
+      // If file exists and cookie is invalid, ignore.
+      return false;
     }
   }
   
