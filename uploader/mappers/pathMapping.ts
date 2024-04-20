@@ -49,7 +49,7 @@ export const uploadLinkSelector = `[href^="https://youtu.be"], [href^="https://y
 // Upload progress
 export const uploadCompleteXPath = '//*[contains(text(),"Upload complete")]';
 export const uploadDailyLimitXPath = '//*[contains(text(),"Daily upload limit reached")]';
-export const uploadStateTextXPath = '//span[contains(@class, "ytcp-video-upload-progress")]'
+export const uploadStateTextXPath = '//span[contains(@class, "ytcp-video-upload-progress") and contains(@class, "progress-label")]'
 
 // Channel name
 export const createChannelSelector = '#create-channel-button';
