@@ -33,7 +33,7 @@ The name a playlist to add the video to.
 Currently only supports a single playlist.  
 *Note: If no playlist is found, a new will be created.*
 
-### --visibility "Private"
+#### --visibility "Private"
 The initial visibility for the video. Default the value will be set to "Private".  
 This support Private, Public and Unlisted.
 
