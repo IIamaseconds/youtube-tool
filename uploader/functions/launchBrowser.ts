@@ -14,7 +14,7 @@ export async function launchBrowser(props: LaunchBrowserProps): Promise<{ browse
   const browser = await puppeteer.launch(props.puppeteerLaunch)
   const page = await browser.newPage()
   
-  await page.setDefaultTimeout(props.timeoutLimit ?? 30000)
+  page.setDefaultTimeout(props.timeoutLimit ?? 30000)
   await page.setBypassCSP(true)
   await page.setViewport(
     {
