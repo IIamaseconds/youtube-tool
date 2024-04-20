@@ -26,7 +26,7 @@ interface InitializeProps {
 
 export const InitializeUploader = async (props: InitializeProps) => {
   const stealthPlugin = StealthPlugin();
-  stealthPlugin.enabledEvasions.delete('navigator.plugins')
+  stealthPlugin.enabledEvasions.delete('media.codecs') 
   stealthPlugin.enabledEvasions.delete('iframe.contentWindow')
   puppeteer.use(stealthPlugin)
   
@@ -48,7 +48,7 @@ const LoginAccount = async (): Promise<boolean> => {
     return false;
   }
   
- const isLoggedIn = await login({
+ return await login({
     mediator,
     uploadUrl,
     homepageUrl,
@@ -56,8 +56,6 @@ const LoginAccount = async (): Promise<boolean> => {
     browser,
     page,
   })
-
-  return isLoggedIn;
 }
 
 const UploadVideo = async (video: Video) => {
