@@ -13,7 +13,7 @@ Note: A cookie will be saved per user.
 #### --pass "password"
 The password for the input user.
 
-#### --channel "channelName" (optional)
+#### --channel "channelName" (optional and case sensitive)
 In case the user has more than one channel, the name of the channel to receive the upload can be provided.
 
 #### --path "AbsoluteFilePath"
