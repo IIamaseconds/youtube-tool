@@ -64,9 +64,9 @@ export const saveCookiesToLocal = async (email: string, page: Page) : Promise<Sa
   const cookiesDirectoryPath = getCookieDirectory()
   const cookiesFilePath = getCookiePath(email)
   
-  await fs.mkdirSync(cookiesDirectoryPath, { recursive: true })
+  fs.mkdirSync(cookiesDirectoryPath, { recursive: true })
   
-  await fs.writeFile(cookiesFilePath, JSON.stringify(cookiesObject), (err) => {
+  fs.writeFile(cookiesFilePath, JSON.stringify(cookiesObject), (err) => {
     if (err) {
       return {
         errorMessage: `The cookie file could not be written. ${err.message}`
