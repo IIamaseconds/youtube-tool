@@ -94,7 +94,8 @@ export async function uploadVideo(props: UploadVideoProps) {
       }
 
       const originalProgress = currentProgress;
-      const stage = originalProgress.includes("Uploading") ? ProcessStageEnum.Uploading 
+      const stage = 
+            originalProgress.includes("Uploading") ? ProcessStageEnum.Uploading 
           : originalProgress.includes("Processing") ? ProcessStageEnum.Processing
           : ProcessStageEnum.Done;
       
@@ -177,7 +178,13 @@ export async function uploadVideo(props: UploadVideoProps) {
   
   // Add the title value
   await titleElement.focus()
-  await sleep(1000);
+  await sleep(1000)
+  await props.page.keyboard.down("Control");
+  await props.page.keyboard.press("KeyA");
+  await props.page.keyboard.up("Control");
+  await sleep(1000)
+  await props.page.keyboard.press("Backspace");
+  
   await titleElement.type(props.video.title.substring(0, props.maxTitleLength))
 
   // Add the Description content
