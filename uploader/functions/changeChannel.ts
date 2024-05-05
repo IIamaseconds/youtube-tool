@@ -1,6 +1,6 @@
 ﻿import { ElementHandle, Page } from "puppeteer";
-import { channelNameXPath } from "../mappers/pathMapping.js";
-import { sleep } from "../helpers/helpers.js";
+import { channelNameXPath } from "../mappers/pathMapping";
+import { sleep } from "../helpers/helpers";
 
 interface ChangeChannelProps{
   channelName: string;

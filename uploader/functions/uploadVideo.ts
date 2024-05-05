@@ -1,10 +1,10 @@
-﻿import * as xPath from "../mappers/pathMapping.js";
-import { Mediator, UploadResult, ProcessStageEnum, Video, VideoUploadState } from "../types/types.js";
-import { PageInteraction, sleep } from "../helpers/helpers.js";
+﻿import * as xPath from "../mappers/pathMapping";
+import { Mediator, UploadResult, ProcessStageEnum, Video, VideoUploadState } from "../types/types";
+import { PageInteraction, sleep } from "../helpers/helpers";
 import { Browser, Page } from "puppeteer";
-import { changeChannel } from "./changeChannel.js";
+import { changeChannel } from "./changeChannel";
 import { clearInterval } from "timers";
-import { uploadStateTextXPath } from "../mappers/pathMapping.js";
+import { uploadStateTextXPath } from "../mappers/pathMapping";
 import { ElementHandle } from "puppeteer";
 
 interface UploadVideoProps{
@@ -89,7 +89,7 @@ export async function uploadVideo(props: UploadVideoProps) {
       const uploadStateText = await props.page.waitForXPath(uploadStateTextXPath) as ElementHandle;
       let currentProgress = await uploadStateText.evaluate((element) => element.textContent);
       
-      if (progressUpdateInterval == undefined || !currentProgress) {
+      if (progressUpdateInterval === undefined || !currentProgress) {
         return
       }
 
@@ -206,7 +206,7 @@ export async function uploadVideo(props: UploadVideoProps) {
       }
       
       // Select playlist entry
-      await pageInteractor.click(xPath.selectPlayListNameXPath(props.video.playlist), { timeoutMs: 5000 })
+      await pageInteractor.click(xPath.selectPlayListNameXPath(props.video.playlist), { timeoutMs: 500});
 
       props.video.onProgress?.({
         progress: 100,
@@ -215,20 +215,35 @@ export async function uploadVideo(props: UploadVideoProps) {
       })
       
     } catch (error) {
-      // Creating new playlist 
-      await pageInteractor.click(xPath.playlistsXPath);
-
-      // click New playlist button
-      await pageInteractor.click(xPath.createPlayListNameXPath)
-      await props.page.waitForXPath(xPath.createPlayListNameXPath)
       
+      // Cancel the search
+      await pageInteractor.click(xPath.createPlayListSearchCancel);
+      
+      // Creating new playlist 
+      await props.page.waitForXPath(xPath.createPlayListNameXPath)
+      await pageInteractor.click(xPath.createPlayListNameXPath)
+      await props.page.waitForXPath(xPath.createPlayListDropDownXPath);
+      await pageInteractor.click(xPath.createPlayListDropDownXPath)
+      
+      // Trigger focus on input field
+      await props.page.keyboard.press("Tab");
+      
+      // Select the new playlist input field and focus
+      await sleep(500)
+
       // Enter new playlist name
-      await props.page.keyboard.type(' ' + props.video.playlist.substring(0, 148))
-
-      // Click create & then done button
-      const createPlaylistBtn = await props.page.$x(xPath.createPlayListButtonXPath)
-      await props.page.evaluate((el) => (el as HTMLElement).click(), createPlaylistBtn[1])
-
+      await props.page.keyboard.type(props.video.playlist.substring(0, 148))
+      await props.page.keyboard.press("Tab");
+      await sleep(200)
+      await props.page.keyboard.press("Tab");
+      await sleep(200)
+      await props.page.keyboard.press("Tab");
+      await sleep(200)
+      await props.page.keyboard.press("Tab");
+      await sleep(200)
+      await props.page.keyboard.press("Enter");
+      await sleep(200)
+      
       createPlaylistDone = await props.page.$x(xPath.createPlayListDoneXPath)
       await props.page.evaluate((el) => (el as HTMLElement).click(), createPlaylistDone[0])
 

@@ -31,7 +31,12 @@ export const textboxTitleAndDescriptionXPath = '//*[@id="textbox"]';
 // Video playlist
 export const createPlayListButtonXPath = "//*[normalize-space(text())='Create']"
 export const createPlayListDoneXPath = "//*[normalize-space(text())='Done']"
-export const createPlayListNameXPath = "//*[normalize-space(text())='New playlist'] | //*[normalize-space(text())='Create playlist']"
+export const createPlayListNameXPath = "//ytcp-button[contains(@class, 'ytcp-playlist-dialog')]";
+export const createPlayListDropDownXPath = '//yt-formatted-string[text()="New playlist"]'
+export const createPlayListTitleInputXPath = '//ytcp-social-suggestion-input[@id="input"][.//div[@aria-label="Add title"]]';
+export const createPlayListSearchCancel = '//*[@id="search"]/ytcp-icon-button';
+export const createPlayListNoSearchResults = '//div[text()="No playlists available"]';
+
 export const selectPlayListNameXPath = (name: string) => `//*[@class="label label-text style-scope ytcp-checkbox-group" and normalize-space(text())="${name}"]`
 export const playlistsXPath = `//*[@id="basics"]/div[4]/div[3]/div[1]/ytcp-video-metadata-playlists/ytcp-text-dropdown-trigger/ytcp-dropdown-trigger/div/div[3]`
 

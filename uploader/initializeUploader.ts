@@ -1,10 +1,10 @@
 import puppeteer from 'puppeteer-extra'
 import { Browser, Page, PuppeteerNodeLaunchOptions } from 'puppeteer'
-import { Credentials, Mediator, Video } from "./types/types.js";
-import { launchBrowser } from "./functions/launchBrowser.js";
-import { login } from "./functions/login.js";
-import { uploadVideo } from "./functions/uploadVideo.js";
-import { defaultMediator } from "./functions/mediator.js";
+import { Credentials, Mediator, Video } from "./types/types";
+import { launchBrowser } from "./functions/launchBrowser";
+import { login } from "./functions/login";
+import { uploadVideo } from "./functions/uploadVideo";
+import { defaultMediator } from "./functions/mediator";
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
 const maxTitleLength = 100

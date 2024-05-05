@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Upload videos to youtube",
   "main": "index.ts",
-  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm run tsc && node dist/index.js",
+    "build": "tsc && esbuild dist/index.js --bundle --platform=node --outfile=dist/index.min.js",
     "tsc": "tsc --build"
   },
   "author": "Mal",
@@ -14,8 +14,11 @@
   "dependencies": {
     "@types/node": "^18.7.23",
     "@types/puppeteer": "^5.4.6",
+    "esbuild": "^0.20.2",
     "esm": "^3.2.25",
     "fs-extra": "^10.1.0",
+    "grunt": "^1.6.1",
+    "index.js": "^0.0.3",
     "minimist": "^1.2.6",
     "puppeteer": "^21.11.0",
     "puppeteer-extra": "^3.3.4",

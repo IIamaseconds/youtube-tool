@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext",
+    "module": "CommonJS",
     "moduleResolution": "Node",
     "lib": [
       "dom",
@@ -22,7 +23,7 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": [
-    "./",
+    "./"
   ],
   "exclude": [
     "node_modules",

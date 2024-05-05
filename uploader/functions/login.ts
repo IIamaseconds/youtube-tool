@@ -1,6 +1,6 @@
 ﻿import { Browser, Page } from "puppeteer";
-import { PageInteraction, saveCookiesToLocal, setCookiesFromExisting, sleep } from "../helpers/helpers.js";
-import { Credentials, Mediator } from "../types/types.js";
+import { PageInteraction, saveCookiesToLocal, setCookiesFromExisting, sleep } from "../helpers/helpers";
+import { Credentials, Mediator } from "../types/types";
 import {
   createChannelSelector,
   defaultLanguageXPath, 
@@ -14,7 +14,7 @@ import {
   loginRecaptchaInputSelector,
   loginSmsAuthSelector,
   uploadPopupSelector
-} from "../mappers/pathMapping.js";
+} from "../mappers/pathMapping";
 
 interface LoginYoutubeAccountProps {
   credentials: Credentials;

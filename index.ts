@@ -1,6 +1,6 @@
-import { Mediator, ProcessStageEnum, Video, VideoUploadState } from "./uploader/types/types.js";
-import { InitializeUploader } from "./uploader/initializeUploader.js";
-import { hasExistingCookies } from "./uploader/helpers/helpers.js";
+import { Mediator, ProcessStageEnum, Video, VideoUploadState } from "./uploader/types/types";
+import { InitializeUploader } from "./uploader/initializeUploader";
+import { hasExistingCookies } from "./uploader/helpers/helpers";
 import fs from "fs";
 import readline from "readline"
 import minimist from 'minimist';
@@ -72,7 +72,6 @@ async function uploadVideo() {
 
     onProgress: (progress: VideoUploadState) => {
       console.clear()
-      console.log(`Progress for "${args.title}" is ${progress.progress}% - ${ProcessStageEnum[progress.stage]}`)
       console.log(progress.progressMessage)
     },
     onSuccess: (videoUrl: string) => console.log(`Video ${args.title} was uploaded successfully at ${videoUrl}`),
