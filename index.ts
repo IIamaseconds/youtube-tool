@@ -1,4 +1,4 @@
-import { Mediator, ProcessStageEnum, Video, VideoUploadState } from "./uploader/types/types";
+import { Mediator, Video, VideoUploadState } from "./uploader/types/types";
 import { InitializeUploader } from "./uploader/initializeUploader";
 import { hasExistingCookies } from "./uploader/helpers/helpers";
 import fs from "fs";
@@ -7,8 +7,8 @@ import minimist from 'minimist';
 
 const args = minimist(process.argv.slice(2))
 const readlineInstance = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
+  input: process.stdin,
+  output: process.stdout
 })
 
 const validateParameters = async () => {
@@ -79,9 +79,9 @@ async function uploadVideo() {
 
   const puppeteerOptions = {
     headless: args.disableHeadless === undefined,
-    args: [`--window-size=1280,720`],
-    viewPortWidth: 1280,
-    viewPortHeight: 720,
+    args: [`--window-size=1920,1080`],
+    viewPortWidth: 1920,
+    viewPortHeight: 1080,
   }
 
   const mediator = {
@@ -103,10 +103,10 @@ async function uploadVideo() {
 
   const isLoggedIn = await LoginAccount()
 
-  if(isLoggedIn){
+  if (isLoggedIn) {
     await UploadVideo(video)
     await CloseBrowser()
-  }else{
+  } else {
     mediator.onError("Could not upload video. Not logged in.")
   }
 }

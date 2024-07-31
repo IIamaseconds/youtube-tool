@@ -7,26 +7,26 @@ import { clearInterval } from "timers";
 import { uploadStateTextXPath } from "../mappers/pathMapping";
 import { ElementHandle } from "puppeteer";
 
-interface UploadVideoProps{
+interface UploadVideoProps {
   video: Video;
   mediator: Mediator;
-  
+
   uploadUrl: string;
   maxTitleLength: number;
   maxDescriptionLength: number;
-  
+
   browser: Browser;
   page: Page;
 }
 
-export async function uploadVideo(props: UploadVideoProps) {   
+export async function uploadVideo(props: UploadVideoProps) {
   const pageInteractor = PageInteraction(props.page);
-  
+
   // Missing Filepath
   if (!props.video.path) {
     throw new Error("Invalid path provided for upload")
   }
-  
+
   // Contains invalid characters
   for (let i in xPath.invalidCharacters) {
     if (props.video.title.includes(xPath.invalidCharacters[i])) {
@@ -47,7 +47,7 @@ export async function uploadVideo(props: UploadVideoProps) {
       progressMessage: `Setting channel to ${props.video.channelName}`,
     })
   }
-  
+
   // Go to upload page
   await props.page.evaluate(() => { window.onbeforeunload = null })
   await props.page.goto(props.uploadUrl)
@@ -57,7 +57,7 @@ export async function uploadVideo(props: UploadVideoProps) {
     stage: ProcessStageEnum.Preparing,
     progressMessage: `Looking for file ${props.video.path}`,
   })
-  
+
   // Get file chooser
   const [fileChooser] = await Promise.all([
     // Wait for file chooser
@@ -66,7 +66,7 @@ export async function uploadVideo(props: UploadVideoProps) {
     // Open file selection
     pageInteractor.click(xPath.buttonSelectFilesXpath)
   ])
-  
+
   // Submit filepath to selector
   await fileChooser.accept([props.video.path])
 
@@ -75,30 +75,30 @@ export async function uploadVideo(props: UploadVideoProps) {
     stage: ProcessStageEnum.Preparing,
     progressMessage: `Initiating upload`,
   })
-  
+
   // Setup onProgress
   let progressUpdateInterval: any
-  let progress: VideoUploadState = {progress: 0, progressMessage: "", stage: ProcessStageEnum.Preparing};
-  
+  let progress: VideoUploadState = { progress: 0, progressMessage: "", stage: ProcessStageEnum.Preparing };
+
   if (props.video.onProgress) {
-    
+
     // Setup callback for progress update
     props.video.onProgress(progress)
 
     progressUpdateInterval = setInterval(async () => {
       const uploadStateText = await props.page.waitForXPath(uploadStateTextXPath) as ElementHandle;
       let currentProgress = await uploadStateText.evaluate((element) => element.textContent);
-      
+
       if (progressUpdateInterval === undefined || !currentProgress) {
         return
       }
 
       const originalProgress = currentProgress;
-      const stage = 
-            originalProgress.includes("Uploading") ? ProcessStageEnum.Uploading 
+      const stage =
+        originalProgress.includes("Uploading") ? ProcessStageEnum.Uploading
           : originalProgress.includes("Processing") ? ProcessStageEnum.Processing
-          : ProcessStageEnum.Done;
-      
+            : ProcessStageEnum.Done;
+
       currentProgress = currentProgress.split(" ").find((txt: string) => txt.indexOf("%") != -1) ?? ""
       const newProgress = currentProgress !== "" ? parseInt(currentProgress.slice(0, -1)) : 0
 
@@ -106,18 +106,18 @@ export async function uploadVideo(props: UploadVideoProps) {
       if (progress.progress !== newProgress) {
         progress.stage = stage;
         progress.progress = newProgress
-        progress.progressMessage = originalProgress 
+        progress.progressMessage = originalProgress
         props.video.onProgress!(progress)
       }
     }, 500)
   }
 
   // Setup promises for upload result
-  const uploadCompletePromise = props.page.waitForXPath(xPath.uploadCompleteXPath, {timeout: 0}).then(() => UploadResult.Completed)
-  const dailyUploadPromise = props.page.waitForXPath(xPath.uploadDailyLimitXPath, {timeout: 0}).then(() => UploadResult.DailyLimitReached);
+  const uploadCompletePromise = props.page.waitForXPath(xPath.uploadCompleteXPath, { timeout: 0 }).then(() => UploadResult.Completed)
+  const dailyUploadPromise = props.page.waitForXPath(xPath.uploadDailyLimitXPath, { timeout: 0 }).then(() => UploadResult.DailyLimitReached);
   const skipProcessingPromise = new Promise<UploadResult>(function(resolve) {
     setInterval(async () => {
-      if((props.video.skipProcessingWait && progress.stage === ProcessStageEnum.Done) || progress.stage === ProcessStageEnum.Processing){
+      if ((props.video.skipProcessingWait && progress.stage === ProcessStageEnum.Done) || progress.stage === ProcessStageEnum.Processing) {
         resolve(UploadResult.Completed)
       }
     }, 1000)
@@ -129,17 +129,17 @@ export async function uploadVideo(props: UploadVideoProps) {
     uploadCompletePromise,
     dailyUploadPromise
   ]).then(async (result: UploadResult) => {
-      if (result === UploadResult.DailyLimitReached) {
-        await props.browser.close();
-        throw new Error('Daily upload limit reached');
-      }
-  
-      // Wait for upload to go away and processing to start, skip the wait if the user doesn't want it.
-      if (props.video.skipProcessingWait && result === UploadResult.Completed) {
-        await props.page.waitForXPath(xPath.uploadCompleteXPath, { hidden: true, timeout: 0 })
-      }
+    if (result === UploadResult.DailyLimitReached) {
+      await props.browser.close();
+      throw new Error('Daily upload limit reached');
+    }
+
+    // Wait for upload to go away and processing to start, skip the wait if the user doesn't want it.
+    if (props.video.skipProcessingWait && result === UploadResult.Completed) {
+      await props.page.waitForXPath(xPath.uploadCompleteXPath, { hidden: true, timeout: 0 })
+    }
   });
-  
+
   if (props.video.onProgress) {
     clearInterval(progressUpdateInterval)
     progressUpdateInterval = undefined
@@ -154,10 +154,10 @@ export async function uploadVideo(props: UploadVideoProps) {
   // Setup thumbnail
   if (props.video.thumbnail) {
     const [thumbChooser] = await Promise.all([
-      
+
       // Wait for file selector
       props.page.waitForFileChooser(),
-      
+
       // Click thumbnail button
       props.page.click(xPath.buttonThumbnailSelectSelector)
     ])
@@ -169,13 +169,13 @@ export async function uploadVideo(props: UploadVideoProps) {
       progressMessage: "Thumbnail added"
     })
   }
-  
+
   // Wait for Title & Description
   await props.page.waitForFunction(xPath.textboxTitleAndDescriptionAvailableFunction)
 
   const [titleElement, descriptionElement] = await props.page.$x(xPath.textboxTitleAndDescriptionXPath)
   await props.page.bringToFront()
-  
+
   // Add the title value
   await titleElement.focus()
   await sleep(1000)
@@ -184,66 +184,69 @@ export async function uploadVideo(props: UploadVideoProps) {
   await props.page.keyboard.up("Control");
   await sleep(1000)
   await props.page.keyboard.press("Backspace");
-  
+
   await titleElement.type(props.video.title.substring(0, props.maxTitleLength))
 
   // Add the Description content
   await descriptionElement.type(props.video.description?.substring(0, props.maxDescriptionLength) ?? "")
-  
+
   // Set 'Is for kids' radio button
   await props.page.click(xPath.buttonChildOptionQuery(props.video.isForChildren));
 
   // Add video to playlist
   let createPlaylistDone;
   if (props.video.playlist) {
-    await props.page.click(xPath.buttonPlaylistsDropdownSelector, {delay: 200})
+    await props.page.click(xPath.buttonPlaylistsDropdownSelector, { delay: 200 })
 
     try {
-      // Enter playlist name in search area
-      const searchField = await props.page.waitForXPath(xPath.buttonSearchXpath);
-      if(searchField !== undefined) {
-        await pageInteractor.type(xPath.buttonSearchSelector, props.video.playlist);
-      }
-      
-      // Select playlist entry
-      await pageInteractor.click(xPath.selectPlayListNameXPath(props.video.playlist), { timeoutMs: 500});
+      // Select playlist checkbox
+      await pageInteractor.click(xPath.selectPlayListNameXPath(props.video.playlist), { timeoutMs: 500 });
 
       props.video.onProgress?.({
         progress: 100,
         stage: ProcessStageEnum.Configuring,
         progressMessage: `Added video to playlist: ${props.video.playlist}`
       })
-      
+
     } catch (error) {
-      
-      // Cancel the search
-      await pageInteractor.click(xPath.createPlayListSearchCancel);
-      
+
+      props.video.onProgress?.({
+        progress: 100,
+        stage: ProcessStageEnum.Configuring,
+        progressMessage: `Creating new playlist: ${props.video.playlist}`
+      })
+
+      // Cancel the search and reopen the dropdown
+      await sleep(200)
+      await props.page.keyboard.press("Escape")
+
+      await sleep(200)
+      await props.page.click(xPath.buttonPlaylistsDropdownSelector, { delay: 200 })
+
       // Creating new playlist 
-      await props.page.waitForXPath(xPath.createPlayListNameXPath)
-      await pageInteractor.click(xPath.createPlayListNameXPath)
-      await props.page.waitForXPath(xPath.createPlayListDropDownXPath);
+      await sleep(200)
+      await pageInteractor.click(xPath.createPlayListNewPlaylistXPath)
+      await sleep(200)
       await pageInteractor.click(xPath.createPlayListDropDownXPath)
-      
-      // Trigger focus on input field
-      await props.page.keyboard.press("Tab");
-      
+
       // Select the new playlist input field and focus
-      await sleep(500)
+      await props.page.keyboard.press("Tab");
+      await props.page.keyboard.press("Tab");
 
       // Enter new playlist name
+      await sleep(500)
       await props.page.keyboard.type(props.video.playlist.substring(0, 148))
       await props.page.keyboard.press("Tab");
-      await sleep(200)
+      await sleep(100)
       await props.page.keyboard.press("Tab");
-      await sleep(200)
+      await sleep(100)
       await props.page.keyboard.press("Tab");
-      await sleep(200)
+      await sleep(100)
       await props.page.keyboard.press("Tab");
-      await sleep(200)
+      await sleep(100)
       await props.page.keyboard.press("Enter");
-      await sleep(200)
-      
+      await sleep(1500)
+
       createPlaylistDone = await props.page.$x(xPath.createPlayListDoneXPath)
       await props.page.evaluate((el) => (el as HTMLElement).click(), createPlaylistDone[0])
 
@@ -269,7 +272,7 @@ export async function uploadVideo(props: UploadVideoProps) {
   }
 
   // Add tags
-  if(props.video.tags){
+  if (props.video.tags) {
     await pageInteractor.click(xPath.buttonShowMetaDataToggleXPath);
     await pageInteractor.type(xPath.uploadTagsInputXPath, props.video.tags.join(', ').substring(0, 495) + ', ')
 
@@ -279,7 +282,7 @@ export async function uploadVideo(props: UploadVideoProps) {
       progressMessage: `Added video tags: ${props.video.tags}`
     })
   }
-  
+
   // Go to Video element  
   await pageInteractor.click(xPath.buttonNextXpath, { waitForEnabled: true })
 
@@ -291,7 +294,7 @@ export async function uploadVideo(props: UploadVideoProps) {
 
   // Set visibility selection
   await pageInteractor.click(xPath.visibilityXpath(props.video.videoVisibility))
-  
+
   // Save youtube upload link
   await props.page.waitForSelector(xPath.uploadLinkSelector)
 
@@ -309,7 +312,7 @@ export async function uploadVideo(props: UploadVideoProps) {
     stage: ProcessStageEnum.Configuring,
     progressMessage: `Saving video settings`
   })
-  
+
   // Set wait time to allow for youtube saving in the frontend
   await sleep(5000);
   await pageInteractor.click(xPath.buttonDoneXpath);
@@ -320,6 +323,6 @@ export async function uploadVideo(props: UploadVideoProps) {
     stage: ProcessStageEnum.Configuring,
     progressMessage: `Video uploaded successfully`
   })
-  
+
   props.video.onSuccess?.(uploadedLink ?? "No link was found");
 }

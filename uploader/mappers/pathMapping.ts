@@ -8,9 +8,9 @@ export const buttonSearchXpath = `//*[@id="search-input"]`;
 export const buttonSearchSelector = `#search-input`;
 export const buttonSelectFilesXpath = `//*[@id="select-files-button"]`;
 export const buttonThumbnailSelectSelector = '#still-picker > ytcp-thumbnails-compact-editor-uploader-old > div > button'
-export const buttonPlaylistsDropdownSelector = 'ytcp-video-metadata-playlists > ytcp-text-dropdown-trigger > ytcp-dropdown-trigger'
+export const buttonPlaylistsDropdownSelector = 'ytcp-video-metadata-playlists > ytcp-text-dropdown-trigger'
 export const buttonShowMetaDataToggleXPath = `//*[@id="toggle-button"]`
-export const buttonChildOptionQuery = (isForChildren? : boolean) => `#audience > ytkc-made-for-kids-select > div.made-for-kids-rating-container.style-scope.ytkc-made-for-kids-select > tp-yt-paper-radio-group > tp-yt-paper-radio-button:nth-child(${isForChildren ? 2 : 1})`
+export const buttonChildOptionQuery = (isForChildren?: boolean) => `#audience > ytkc-made-for-kids-select > div.made-for-kids-rating-container.style-scope.ytkc-made-for-kids-select > tp-yt-paper-radio-group > tp-yt-paper-radio-button:nth-child(${isForChildren ? 2 : 1})`
 
 // Login language
 export const defaultLanguageXPath = '//*[@data-value="en-GB"]'
@@ -33,11 +33,13 @@ export const createPlayListButtonXPath = "//*[normalize-space(text())='Create']"
 export const createPlayListDoneXPath = "//*[normalize-space(text())='Done']"
 export const createPlayListNameXPath = "//ytcp-button[contains(@class, 'ytcp-playlist-dialog')]";
 export const createPlayListDropDownXPath = '//yt-formatted-string[text()="New playlist"]'
+export const createPlayListNewPlaylistXPath = '//*[@id="dialog"]/div[2]/div/ytcp-button/ytcp-button-shape/button'
 export const createPlayListTitleInputXPath = '//ytcp-social-suggestion-input[@id="input"][.//div[@aria-label="Add title"]]';
 export const createPlayListSearchCancel = '//*[@id="search"]/ytcp-icon-button';
 export const createPlayListNoSearchResults = '//div[text()="No playlists available"]';
 
-export const selectPlayListNameXPath = (name: string) => `//*[@class="label label-text style-scope ytcp-checkbox-group" and normalize-space(text())="${name}"]`
+export const selectPlayListNameXPath = (name: string) => `//*[contains(@class, "ytcp-checkbox-group") and normalize-space(text())="${name}"]`
+// export const selectPlayListNameXPath = (name: string) => `//*[@class="label label-text style-scope ytcp-checkbox-group" and normalize-space(text())="${name}"]`
 export const playlistsXPath = `//*[@id="basics"]/div[4]/div[3]/div[1]/ytcp-video-metadata-playlists/ytcp-text-dropdown-trigger/ytcp-dropdown-trigger/div/div[3]`
 
 // Video language

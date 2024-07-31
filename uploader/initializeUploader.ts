@@ -21,15 +21,15 @@ let credentials: Credentials
 interface InitializeProps {
   mediator?: Mediator
   credentials: Credentials
-  puppeteerOptions?: PuppeteerNodeLaunchOptions 
+  puppeteerOptions?: PuppeteerNodeLaunchOptions
 }
 
 export const InitializeUploader = async (props: InitializeProps) => {
   const stealthPlugin = StealthPlugin();
-  stealthPlugin.enabledEvasions.delete('media.codecs') 
+  stealthPlugin.enabledEvasions.delete('media.codecs')
   stealthPlugin.enabledEvasions.delete('iframe.contentWindow')
   puppeteer.use(stealthPlugin)
-  
+
   const launchResult = await launchBrowser({
     puppeteerLaunch: props.puppeteerOptions,
   })
@@ -38,17 +38,17 @@ export const InitializeUploader = async (props: InitializeProps) => {
   browser = launchResult.browser;
   credentials = props.credentials;
   mediator = props.mediator ?? defaultMediator;
-  
+
   return { LoginAccount, UploadVideo, CloseBrowser }
 }
 
 const LoginAccount = async (): Promise<boolean> => {
-  if(!browser || !page){
+  if (!browser || !page) {
     mediator.onError("No browser or page was instantiated. Initialize uploader before logging in.")
     return false;
   }
-  
- return await login({
+
+  return await login({
     mediator,
     uploadUrl,
     homepageUrl,
@@ -59,11 +59,11 @@ const LoginAccount = async (): Promise<boolean> => {
 }
 
 const UploadVideo = async (video: Video) => {
-  if(!browser || !page){
+  if (!browser || !page) {
     mediator.onError("No browser or page was instantiated. Initialize uploader and log in before uploading.")
     return;
   }
-  
+
   await uploadVideo({
     page,
     browser,
